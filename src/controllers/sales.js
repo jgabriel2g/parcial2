@@ -24,9 +24,19 @@ export const createSale = async (req, res) => {
             return;
         }
 
+        let [rows] = await pool.query("select * from products where id = ?", [product_id])
+        if (rows.length <= 0) return res.status(404).json({
+            message: "Product not found"
+        })
+        if (rows[0].amount < amount) {
+            return res.status(400).json({
+                message: "the quantity of the product to be sold is greater than the current quantity"
+            })
+        }
 
-        const query = "insert into sales (product_id, client_name, client_phone, amount, price) values (?,?,?,?,?)"
-        const [rows] = await pool.query(query, [product_id, client_name, client_phone, amount, price])
+        const query = "insert into sales (product_id, client_name, client_phone, amount, price) values (?,?,?,?,?)";
+
+        [rows] = await pool.query(query, [product_id, client_name, client_phone, amount, price])
 
         res.send({
             id: rows.insertId,
