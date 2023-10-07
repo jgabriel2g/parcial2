@@ -34,9 +34,10 @@ export const createSale = async (req, res) => {
             })
         }
 
+        let total = price * amount
         const query = "insert into sales (product_id, client_name, client_phone, amount, price) values (?,?,?,?,?)";
 
-        [rows] = await pool.query(query, [product_id, client_name, client_phone, amount, price])
+        [rows] = await pool.query(query, [product_id, client_name, client_phone, amount, total])
 
         res.send({
             id: rows.insertId,
